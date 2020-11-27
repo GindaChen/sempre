@@ -1,188 +1,191 @@
-# SEMPRE 2.4: Semantic Parsing with Execution
+# SEMPRE as semantic parser
 
-## What is semantic parsing?
+This fork is created for [CS703 Fall2020 course project](https://github.com/GindaChen/cs703-sqlizer) to replicate the semantic parser used in SQLizer.
 
-A semantic parser maps natural language utterances into an intermediate logical
-form, which is "executed" to produce a denotation that is useful for some task.
+*See the original [sempre repo](https://github.com/percyliang/sempre) and original [README.md](./README.md) if this repo is not what you’re lookinig for.*
 
-A simple arithmetic task:
 
-- Utterance: *What is three plus four?*
-- Logical form: `(+ 3 4)`
-- Denotation: `7`
 
-A question answering task:
+## Quick Start
 
-- Utterance: *Where was Obama born?*
-- Logical form: `(place_of_birth barack_obama)`
-- Denotation: `Honolulu`
+### Possible Environment
 
-A virtual travel agent task:
+- Ubuntu 16.04 / 18.04, Cloudlab machine 
+  - If need to host a freebase, need >100GB memory.
+- 
 
-- Utterance: *Show me flights to Montreal leaving tomorrow.*
-- Logical form: `(and (type flight) (destination montreal) (departure_date 2014.12.09))`
-- Denotation: `(list ...)`
 
-By parsing utterances into logical forms, we obtain a rich representation that
-enables much deeper, context-aware understanding beyond the words.  With the
-rise of natural language interfaces, semantic parsers are becoming increasingly
-more powerful and useful.
 
-## What is SEMPRE?
 
-SEMPRE is a toolkit that makes it easy to develop semantic parsers for new
-tasks.  The main paradigm is to learn a feature-rich discriminative semantic
-parser from a set of utterance-denotation pairs.  One can also quickly
-prototype rule-based systems, learn from other forms of supervision, and
-combine any of the above.
 
-If you use SEMPRE in your work, please cite:
 
-    @inproceedings{berant2013freebase,
-      author = {J. Berant and A. Chou and R. Frostig and P. Liang},
-      booktitle = {Empirical Methods in Natural Language Processing (EMNLP)},
-      title = {Semantic Parsing on {F}reebase from Question-Answer Pairs},
-      year = {2013},
-    }
 
-SEMPRE has been used in the following papers:
 
-- J. Berant and A. Chou and R. Frostig and P. Liang. [Semantic parsing on
-  Freebase from question-answer
-  pairs](http://cs.stanford.edu/~pliang/papers/freebase-emnlp2013.pdf).  EMNLP,
-  2013.
-  This paper introduced SEMPRE 1.0, applied it to question answering on
-  Freebase, and created the WebQuestions dataset.  The paper focuses on scaling
-  up semantic parsing via alignment and bridging, and does not talk about the
-  SEMPRE framework at all.  To reproduce those results, check out SEMPRE 1.0.
-- J. Berant and P. Liang.  [Semantic Parsing via
-  Paraphrasing](http://cs.stanford.edu/~pliang/papers/paraphrasing-acl2014.pdf).
-  ACL, 2014.
-  This paper also used SEMPRE 1.0.  The paraphrasing model is somewhat of a
-  offshoot, and does not use many of the core learning and parsing utiltiies in
-  SEMPRE.  To reproduce those results, check out SEMPRE 1.0.
 
-Please refer to the [project page](https://nlp.stanford.edu/software/sempre/) for a more complete list.
 
-## Where do I go next?
 
-- If you're new to semantic parsing, you can learn more from the [background
-  reading section of the tutorial](TUTORIAL.md).
-- Install SEMPRE using the instructions under **Installation** below.
-- Walk through the [tutorial](TUTORIAL.md)
-  to get a hands-on introduction to semantic parsing through SEMPRE.
-- Read the complete [documentation](DOCUMENTATION.md)
-  to learn about the different components in SEMPRE.
+### Dependency if needed
 
-# Installation
+- [Lucene 4.4.0](https://archive.apache.org/dist/lucene/java/4.4.0/lucene-4.4.0.zip): The parser needed for training.
+- [Lucene indeices](./dependency-archive/lucene-index). This is needed to train the `freebase` index.
+  - `lib/lucene/4.4/inexact`: https://nlp.stanford.edu/software/sempre/release-emnlp2013/lib/lucene/4.4/inexact.tar.bz2/
+  - `lib/lucene/4.4/free917`: http://nlp.stanford.edu/software/sempre/release-emnlp2013/lib/lucene/4.4/free917.tar.bz2
+  - 
 
-## Requirements
 
-You must have the following already installed on your system.
 
-- Java 8 (not 7)
-- Ant 1.8.2
-- Ruby 1.8.7 or 1.9
-- wget
-- make (for compiling fig and Virtuoso)
-- zip (for unzip downloaded dependencies)
 
-Other dependencies will be downloaded as you need them.  SEMPRE has been tested
-on Ubuntu Linux 12.04 and MacOS X.  Your mileage will vary depending on how
-similar your system is.
 
-## Easy setup
+## Example Commands
 
-1. Clone the GitHub repository:
+*All the following command assume the current working directory is the `sempre` directory.*
 
-        git clone https://github.com/percyliang/sempre
 
-2. Download the minimal core dependencies (all dependencies will be placed in `lib`):
 
-        ./pull-dependencies core
+Verbose everything
 
-3. Compile the source code (this produces `libsempre/sempre-core.jar`):
+```bash
+./run @mode=simple \
+# -Grammar.inPaths sqlizer/simple.grammar \ 
+-languageAnalyzer corenlp.CoreNLPAnalyzer \
+-Parser.verbose 3 -MergeFn.verbose 3  -TypeInference.verbose 3 -MixParser.verbose 3 -FuzzyMatchFn.verbose 3 -SelectFn.verbose 3 -JoinFn.verbose 3 -Learner.verbose 3 -SimpleLexiconFn.verbose 3
+```
 
-        ant core
 
-4. Run an interactive shell:
 
-        ./run @mode=simple
+Open freebase client with CoreNLP. (Not very much natrual language support)
 
-    You should be able to type the following into the shell and get the answer `(number 7)`:
+```shell
+./run @mode=simple-freebase-nocache @sparqlserver=localhost:3001 @domain=free917  @pooldir=1 -languageAnalyzer corenlp.CoreNLPAnalyzer \
+-Grammar.inPaths freebase/data/emnlp2013.grammar
 
-        (execute (call + (number 3) (number 4)))
+# Try the following:
+# > California
+# > Find me the number of papers in OOPSL 2020
+```
 
-To go further, check out the [tutorial](TUTORIAL.md) and then the [full
-documentation](DOCUMENTATION.md).
 
-## Virtuoso graph database
 
-If you will be using natural language to query databases (e.g., Freebase), then
-you will also need to setup your own Virtuoso database (unless someone already
-has done this for you):
+Open full freebase in foreground mode
 
-For Ubuntu, follow this:
+```shell
+virtuoso-opensource/install/bin/virtuoso-t +configfile lib/fb_data/93.exec/vdb/virtuoso.ini +wait +foreground
+# Freebase database backend start in console.
+```
 
-    sudo apt-get install -y automake gawk gperf libtool bison flex libssl-dev
 
-    # Clone the repository
-    ./pull-dependencies virtuoso
 
-    # Make and install
-    cd virtuoso-opensource
-    ./autogen.sh
-    ./configure --prefix=$PWD/install
-    make
-    make install
-    cd ..
+*(Need Freebase started)* Short query over the freebase over california
 
-on OS/X you can install virtuoso using homebrew by following the instructions
-[here](http://carsten.io/virtuoso-os-on-mac-os/)
+```shell
+./run @mode=query @sparqlserver=localhost:3001 \
+-formula '(fb:location.location.containedby fb:en.california)'
+```
 
-To have SEMPRE interact with Virtuoso, the required modules need to be compiled as follow:
 
-    ./pull-dependencies core corenlp freebase
-    ant freebase
 
-# Contribute
+*(Freebase)* Test on some small formulas
 
-To contribute code or resource to SEMPRE:
+```shell
+# The small formula file 
+#			freebase/data/free917-small-formula.txt 
+# is a pre-defined file that record 
+# some of the target formulas inside free917.
 
-- Create a fork of the repository. If you already have a fork,
-  it is a good idea to sync with the upstream repository first.
-- Push your changes to a new branch in your fork.
-- Start a pull request: go to your branch on the GitHub website,
-  then click "New pull request". Please specify the `develop` branch
-  of the upstream repository.
+./run @mode=query -cachePath ./query_cache.txt  \
+@sparqlserver=localhost:3001 \
+-SparqlExecutor.readTimeoutMs 6000000 \
+-formulasPath freebase/data/free917-small-formula.txt
+```
 
-# ChangeLog
 
-Changes from SEMPRE 1.0 to SEMPRE 2.0:
 
-- Updated tutorial and documentation.
-- Refactored into a core part for building semantic parsers in general;
-  interacting with Freebase and Stanford CoreNLP are just different modules.
-- Removed fbalignment (EMNLP 2013) and paraphrase (ACL 2014) components to
-  avoid confusion.  If you want to reproduce those systems, use SEMPRE 1.0.
 
-Changes from SEMPRE 2.0 to SEMPRE 2.1:
 
-- Added the `tables` package for the paper *Compositional semantic parsing on semi-structured tables* (ACL 2015).
-- Add and `overnight` package for the paper *Building a semantic parser overnight* (ACL 2015).
+*(Need Freebase started)* Long query over the freebase over the 50th question:
 
-Changes from SEMPRE 2.1 to SEMPRE 2.2:
+>  “Where did the rolling stones 2009 concert tour take place”
 
-- Added code for the paper *Inferring Logical Forms From Denotations* (ACL 2016).
+```shell
+./run \
+@mode=query \
+@sparqlserver=localhost:3001 \
+-SparqlExecutor.readTimeoutMs 6000000 \
+-formula '(and (fb:type.object.type fb:location.location) (and (fb:type.object.type fb:location.administrative_division) ((lambda x (fb:location.statistical_region.foreign_direct_investment_net_inflows (fb:measurement_unit.dated_money_value.valid_date (var x)))) (date 2009 -1 -1))))'
+# ... 
+#   (list (name fb:en.poland Poland) (name fb:en.united_kingdom_of_great_britain_and_ireland "United Kingdom") (name fb:en.united_states_of_america "United States of America") ...)
+# } [5m54s]
+```
 
-Changes from SEMPRE 2.2 to SEMPRE 2.3:
 
-- Added the `interactive` package for the paper *Naturalizing a programming language through interaction* (ACL 2017).
 
-Changes from SEMPRE 2.3 to SEMPRE 2.3.1:
+## SQLizer useful commands
 
-- Modified the `tables` module to resemble SEMPRE 2.1, effectively making it work again.
+Simply run the rigid grammar on core nlp (with all four functional tags on)
 
-Changes from SEMPRE 2.3.1 to SEMPRE 2.4:
+```shell
+./run @mode=simple -Grammar.inPaths sqlizer/simple.grammar -languageAnalyzer corenlp.CoreNLPAnalyzer \
+-Grammar.tags compositional join bridge inject
+```
 
-- Added the `cprune` package for the paper *Macro Grammars and Holistic Triggering for Efficient Semantic Parsing* (EMNLP 2017).
+
+
+Run rigid grammar only with `join` and `compositional`
+
+```bash
+./run @mode=simple -Grammar.inPaths sqlizer/simple.grammar -languageAnalyzer corenlp.CoreNLPAnalyzer \
+-Grammar.tags join compositional
+```
+
+
+
+Add the following flags as verbose all:
+
+```bash
+-Parser.verbose 3 -MergeFn.verbose 3  -TypeInference.verbose 3 -MixParser.verbose 3 -FuzzyMatchFn.verbose 3 -SelectFn.verbose 3 -JoinFn.verbose 3 -Learner.verbose 3 -SimpleLexiconFn.verbose 3
+```
+
+
+
+## Knowledge in NLP
+
+- [**NLTK Tags**](./sqlizer/README-corenlp-NLTK-tags.md). The abbreviation used in the Stanford CoreNLP that explains the property of the word.
+- 
+
+
+
+## Toolchain in Sempre
+
+- Stanford `corenlp`: The 
+
+- `Virtuoso`, `freebase`, `Sparql` as the knowledge base backend.
+  - **Freebase**: a graph database. Originally supported by google, but deprecated 2015. Now we need to host the **full-virtuoso** (`./pull-dependency freebase-full`) in our end to maintain the entity matching and phrase matching.
+  - **SparQL**: a graph database query language (like SQL). Think of it as the query language to Freebase.
+  - **[Virtuoso](https://github.com/openlink/virtuoso-opensource)**: a graph database engine. In fact, it is a “universal” data engine that supports graph database. 
+
+
+
+## Questions
+
+What are all the modes in the master server, and how to use them to
+
+- Only retrieve parsed derivation, instead of triggering a freebase query?
+
+```shell
+# Possible @mode=["test", "freebase", "cacheserver", "filterfreebase", "sparqlserver", "indexfreebase", "convertfree917", "query", "simple", "simple-sparql", "simple-lambdadcs", "simple-freebase", "simple-freebase-nocache", "overnight", "tables", "genovernight", "genovernight-wrapper", "geo880"]
+```
+
+
+
+What is `BridgeFn` and `JoinFn`?
+
+
+
+When doinig freebase training, It seems the bottleneck is the database output rather than the parser.
+
+1. How does the database actually work? Why can’t it using 40 cores?
+2. How to increase its core?
+3. What is the best time-out?
+
+
+
