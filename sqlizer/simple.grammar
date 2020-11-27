@@ -1,0 +1,5 @@
+(rule $Noun ($LEMMA_TOKEN) (FilterPosTagFn token WRB WP NN NNS NNP NNPS))
+(rule $SimpleNounPhrase ($Noun) (ConcatFn " "))
+(rule $SimpleNounPhrase ($Noun $SimpleNounPhrase) (ConcatFn " "))
+
+(rule $ROOT ($SimpleNounPhrase) (IdentityFn))
