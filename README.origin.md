@@ -125,10 +125,10 @@ has done this for you):
 For Ubuntu, follow this:
 
     sudo apt-get install -y automake gawk gperf libtool bison flex libssl-dev
-
+    
     # Clone the repository
     ./pull-dependencies virtuoso
-
+    
     # Make and install
     cd virtuoso-opensource
     ./autogen.sh
@@ -186,3 +186,4 @@ Changes from SEMPRE 2.3 to SEMPRE 2.3.1:
 Changes from SEMPRE 2.3.1 to SEMPRE 2.4:
 
 - Added the `cprune` package for the paper *Macro Grammars and Holistic Triggering for Efficient Semantic Parsing* (EMNLP 2017).
+

@@ -2,18 +2,31 @@
 
 This fork is created for [CS703 Fall2020 course project](https://github.com/GindaChen/cs703-sqlizer) to replicate the semantic parser used in SQLizer.
 
-*See the original [sempre repo](https://github.com/percyliang/sempre) and original [README.md](./README.md) if this repo is not what you’re lookinig for.*
+*See the original [sempre repo](https://github.com/percyliang/sempre) and original [README.md](./README.origin.md) if this repo is not what you’re lookinig for.*
 
 
 
 ## Quick Start
 
-### Possible Environment
 
-- Ubuntu 16.04 / 18.04, Cloudlab machine 
+
+### Environment
+
+- Ubuntu 16.04 / 18.04, Cloudlab machine. 
   - If need to host a freebase, need >100GB memory.
-- 
+  - Sempre is also tested on Ubuntu 12.04 and MacOS. 
+- Java 8 (not 7)
+- Ant 1.8.2 (or beyond, I assume - We use  `Ant 1.10`)
+- Ruby 1.8.7 or 1.9
+- wget
+- make (for compiling fig and Virtuoso)
+- zip (for unzip downloaded dependencies)
 
+```shell
+# Quick check script
+java -version && ant -version && ruby -v
+wget -h && make -v && zip -h
+```
 
 
 
