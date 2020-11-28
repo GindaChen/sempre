@@ -32,18 +32,39 @@ wget -h && make -v && zip -h
 
 
 
-
-
-
-
-
-### Dependency if needed
+### Dependency
 
 - [Lucene 4.4.0](https://archive.apache.org/dist/lucene/java/4.4.0/lucene-4.4.0.zip): The parser needed for training.
 - [Lucene indeices](./dependency-archive/lucene-index). This is needed to train the `freebase` index.
-  - `lib/lucene/4.4/inexact`: https://nlp.stanford.edu/software/sempre/release-emnlp2013/lib/lucene/4.4/inexact.tar.bz2/
+  - `lib/lucene/4.4/inexact`: Needed to use the SQLizer grammar file. https://nlp.stanford.edu/software/sempre/release-emnlp2013/lib/lucene/4.4/inexact.tar.bz2/. 
   - `lib/lucene/4.4/free917`: http://nlp.stanford.edu/software/sempre/release-emnlp2013/lib/lucene/4.4/free917.tar.bz2
-  - 
+
+
+
+
+
+### Build & Quick Start
+
+#### Simple + CoreNLP
+
+To simply start the `simple` service and run some simple execute commands:
+
+```shell
+# Pull dependencies. We only download the essentials
+# 	All Packages include: core corenlp freebase virtuoso tables overnight esslli_2016 
+./pull-dependencies core corenlp
+
+# Build the project.
+# 	See build.xml for build options
+ant core corenlp
+
+# Run the simple interactive mode
+./run @mode=simple -languageAnalyzer corenlp.CoreNLPAnalyzer
+> (execute (call + (number 3) (number 4)))
+> Three
+```
+
+Now you’re able to explore the simple world with execution and basic grammar with the stanford core NLP flag on (`-languageAnalyzer corenlp.CoreNLPAnalyzer`)
 
 
 
