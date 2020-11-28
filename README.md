@@ -68,6 +68,63 @@ Now you’re able to explore the simple world with execution and basic grammar w
 
 
 
+#### Simple Freebase
+
+To also build the Freebase and virtuoso for knowledge base server:
+
+```shell
+# Build Virtuoso
+sudo apt-get install -y automake gawk gperf libtool bison flex libssl-dev
+./pull-dependencies freebase virtuoso
+cd virtuoso-opensource
+./autogen.sh
+./configure --prefix=$PWD/install
+make -j
+make install
+cd ..
+
+# Build the project and run
+ant freebase 
+
+# Host a freebase with tutorial dataset 
+freebase/scripts/virtuoso start tutorial.vdb 3001
+freebase/scripts/virtuoso add freebase/data/tutorial.ttl 3001
+
+# Run a small query against freebaes
+./run @mode=query @sparqlserver=localhost:3001 -formula '(fb:location.location.containedby fb:en.california)'
+
+# Run a simple query over the freebase
+./run @mode=simple-freebase-nocache @sparqlserver=localhost:3001
+> (execute fb:en.california)
+```
+
+
+
+#### Full Freebase
+
+The full freebase has about 60G knowledge graph. To serve that, we download the full freebase using `pull-dependency`, extract that zip flle, then serve that db.
+
+```shell
+# To start a full copy of freebase (60G!), do the following
+./pull-dependencies fullfreebase-vdb
+echo "Can you manually unzip the full freebase into the folder?"
+	echo "likely, this will take a long time:"
+echo "		cd lib/fb_data/93.exec"
+echo "		tar -xf vdb.tar.bz2"
+
+# Start the full freebase on 3091 port.
+freebase/scripts/virtuoso start lib/fb_data/93.exec/vdb 3091
+
+# Run a query to verify this base is working
+./run @mode=query @sparqlserver=localhost:3091 -formula '(fb:location.location.containedby fb:en.california)'
+```
+
+
+
+
+
+
+
 
 
 ## Example Commands
