@@ -125,6 +125,19 @@ freebase/scripts/virtuoso start lib/fb_data/93.exec/vdb 3091
 
 
 
+## Glossary & Tips
+
+- **Stanford `corenlp`**: The core NLP package for tokenization, lemmetization and dependency analysis.
+  - [**NLTK Tags**](./sqlizer/README-corenlp-NLTK-tags.md). The abbreviation used in the Stanford CoreNLP that explains the property of the word. (e.g. NN = Noun, JJ = Adjetive, etc.)
+
+- `Virtuoso`, `freebase`, `Sparql`: the knowledge base backend.
+  - **Freebase**: a graph database. Originally supported by google, but deprecated 2015. Now we need to host the **full-virtuoso** (`./pull-dependency freebase-full`) in our end to maintain the entity matching and phrase matching.
+  - **SparQL**: a graph database query language (like SQL). Think of it as the query language to Freebase.
+  - **[Virtuoso](https://github.com/openlink/virtuoso-opensource)**: a graph database engine. In fact, it is a “universal” data engine that supports graph database. 
+- Learning in Sempre
+  - Just provide a training set, each line contains a pair of `(utterance, denotation)`. 
+  - See the paper [Bringing machine learning and compositional semantics together](https://web.stanford.edu/~cgpotts/manuscripts/liang-potts-semantics.pdf). 
+
 
 
 ## Example Commands
@@ -210,6 +223,8 @@ virtuoso-opensource/install/bin/virtuoso-t +configfile lib/fb_data/93.exec/vdb/v
 
 
 
+
+
 ## SQLizer useful commands
 
 Simply run the rigid grammar on core nlp (with all four functional tags on)
@@ -238,21 +253,7 @@ Add the following flags as verbose all:
 
 
 
-## Knowledge in NLP
-
-- [**NLTK Tags**](./sqlizer/README-corenlp-NLTK-tags.md). The abbreviation used in the Stanford CoreNLP that explains the property of the word.
 - 
-
-
-
-## Toolchain in Sempre
-
-- Stanford `corenlp`: The 
-
-- `Virtuoso`, `freebase`, `Sparql` as the knowledge base backend.
-  - **Freebase**: a graph database. Originally supported by google, but deprecated 2015. Now we need to host the **full-virtuoso** (`./pull-dependency freebase-full`) in our end to maintain the entity matching and phrase matching.
-  - **SparQL**: a graph database query language (like SQL). Think of it as the query language to Freebase.
-  - **[Virtuoso](https://github.com/openlink/virtuoso-opensource)**: a graph database engine. In fact, it is a “universal” data engine that supports graph database. 
 
 
 
