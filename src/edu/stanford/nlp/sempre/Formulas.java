@@ -244,6 +244,21 @@ public abstract class Formulas {
         return ((NumberValue) value).value + "";
     } else if (formula instanceof VariableFormula) {
       return ((VariableFormula) formula).name;
+    } if (formula instanceof CallFormula) {
+      JavaExecutor executor = new JavaExecutor();
+      try {
+        Executor.Response resp = executor.execute(formula, null);
+        Value value = resp.value;
+        if (value instanceof StringValue)
+          return ((StringValue) value).value;
+        if (value instanceof NameValue)
+          return ((NameValue) value).id;
+        if (value instanceof NumberValue)
+          return ((NumberValue) value).value + "";
+      } catch (Exception e){
+        e.printStackTrace();
+        return null;
+      }
     }
     return null;
   }
